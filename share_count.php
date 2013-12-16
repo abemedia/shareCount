@@ -17,19 +17,19 @@ class shareCount {
 		$this->cache_time		= $this->config->cache_time;
 	}
 	
-	function setVar($var, $strict = false) {
-		if(isset($_REQUEST[$var]) && $_REQUEST[$var] > 0) return $var;
-		elseif($strict = false) return $this->config->$var;
-		else return false;
+	function getVar($var, $strict = false) {
+		if(isset($_REQUEST[$var]) && $_REQUEST[$var]) return $_REQUEST[$var];
+		elseif($strict) return false;
+		else return $this->config->$var;
 	}
 		
 	public function get() {
 		$this->url				= filter_input(INPUT_GET, 'url', FILTER_SANITIZE_URL);
 		// kill the script if no url
 		if(!$this->url) die("Error: No URL specified.");
-		$format					= $this->setVar('format');
+		$format					= $this->getVar('format');
 		$this->setFormat($format);
-		$this->callback 		= $this->setVar('callback');
+		$this->callback 		= $this->getVar('callback');
 		$this->data 			= new stdClass;
 		$this->data->url		= $this->url;
 		$this->data->shares		= new stdClass;
@@ -51,7 +51,8 @@ class shareCount {
 				header ("Content-Type: application/javascript"); 
 				break;
 			case "json": // only here for reference
-				if($this->setVar('callback', true)) {
+			default:
+				if($this->getVar('callback', true)) {
 					$this->format = 'jsonp';
 					header ("Content-Type: application/javascript"); 
 				}
@@ -60,7 +61,7 @@ class shareCount {
 					header ("Content-Type:application/json");
 				}
 		}
-		return true;
+		return $format;
 	}
 	
 	// query API to get share counts
