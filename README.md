@@ -77,5 +77,6 @@ Download the package and unzip in on your computer. Open config.php with a text-
 
 ## Copyright
 &copy; 2013 Adam Bouqdib - http://abemedia.co.uk
+
 Released under GNU GPL 2. See licence.md for further information.
 
