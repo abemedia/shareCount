@@ -1,5 +1,5 @@
 <?php
-require("share-count.php");
+require("share_count.php");
 $count = new shareCount;
-$count->cleanCache();
+$count->cleanCache(isset($_REQUEST['kill']) ? true : false);
 ?>

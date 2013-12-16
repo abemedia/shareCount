@@ -9,15 +9,16 @@ class shareCount {
 	
 	function __construct() {
 		$this->config 		 = new config;
-		$this->shares 		 = new stdClass;
-		$this->shares->count = new stdClass;
-		$this->shares->count->total = 0;
-		if(!$this->callback) $this->callback = (string) (isset($_REQUEST['callback']) ? $_REQUEST['callback'] : $this->config->callback);
 	}
 	
 	public function get() {
+		$this->format 		 = $this->getFormat();
+		$this->shares 		 = new stdClass;
+		$this->shares->count = new stdClass;
+		$this->shares->count->total = 0;
 		$this->shares->url = $this->url;
-		if(!$this->format) $this->format = $this->getFormat();
+		if(!$this->callback) $this->callback = (string) (isset($_REQUEST['callback']) ? $_REQUEST['callback'] : $this->config->callback);
+		
 		if($this->config->use_cache) $this->getCache();
 		else $this->getShares();
 	}
@@ -139,13 +140,13 @@ class shareCount {
 	}
 	
 	// delete expired cache
-	public function cleanCache() {
+	public function cleanCache($kill = null) {
 		$i = 0;
 		if ($handle = @opendir($config->cache_directory)) {
 			while (false !== ($file = @readdir($handle))) {
 				if ($file != '.' and $file != '..') {
 					$file_created = ((@file_exists($file))) ? @filemtime($file) : 0;
-					if (time() - $this->config->cache_time < $file_created) {
+					if (time() - $this->config->cache_time < $file_created or $kill) {
 						$i++;
 						echo $file . ' deleted.<br>';
 						@unlink($this->config->cache_directory . '/' . $file);
