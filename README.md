@@ -71,6 +71,35 @@ processShares({
 </shares>
 ```
 
+## jQuery & Bootstrap Example
+
+```javascript
+// Get current URL from canonical tag
+var shareUrl = $("link[rel=canonical]").attr("href");
+// Ajax request to read share counts. Notice "&callback=?" is appended to the URL.
+$.getJSON('http://share-count.appspot.com/?url=' + encodeURIComponent(shareUrl) + "&callback=?", function(data) {
+	$(".js-share .count").each(function(index, el) {
+		var $service = $(el).parents(".share-btn").attr("data-service");
+		$(el).html(data['shares'][$service]);
+	});;
+});
+```
+```html
+  <div class='js-share-btn js-total' data-service="total">
+    <div class="count"></div>
+    Shares 
+  </div>
+  <div class='js-share-btn' data-service="facebook">
+    <div class="count"></div>
+    <a class="btn btn-facebook"><i class="fa fa-facebook"></i> Share on Facebook</a></div>
+  <div class='js-share-btn' data-service="twitter">
+    <div class="count"></div>
+    <a class="btn btn-twitter"><i class="fa fa-twitter"></i> Share on Twitter</a></div>
+  <div class='js-share-btn' data-service="google">
+    <div class="count"></div>
+    <a class="btn btn-google"><i class="fa fa-google-plus"></i> Share on Google+</a></div>
+```
+
 ### Host it yourself
 
 Download the package and unzip in on your computer. Open config.php with a text-editor of your choice and amend the few configuration values, then upload the whole folder to your server.
