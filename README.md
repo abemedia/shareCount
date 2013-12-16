@@ -29,7 +29,7 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
     "reddit": 0,
     "linkedin": 10387,
     "delicious": 3815,
-    "stumbleupon": 0,
+    "stumbleupon": 254953,
     "pinterest": 10428
   }
 }
@@ -47,7 +47,7 @@ processShares({
     "reddit": 0,
     "linkedin": 10387,
     "delicious": 3815,
-    "stumbleupon": 0,
+    "stumbleupon": 254953,
     "pinterest": 10428
   }
 })
@@ -65,7 +65,7 @@ processShares({
 		<reddit>0</reddit>
 		<linkedin>10387</linkedin>
 		<delicious>3815</delicious>
-		<stumbleupon>0</stumbleupon>
+		<stumbleupon>254953</stumbleupon>
 		<pinterest>10428</pinterest>
 	</shares>
 </shares>
