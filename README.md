@@ -1,11 +1,11 @@
-ShareCount API
+Social Share Count API
 ===========
 
-A PHP script to fetch the count of social shares on Facebook, Twitter, Google +1, Reddit, LinkedIn, Delicious, StumbleUpon and Pinterest as JSON, JSONP or XML dat with the option to cache the results locally.
+A simple PHP script to fetch the count of social shares on Facebook, Twitter, Google +1, Reddit, LinkedIn, Delicious, StumbleUpon and Pinterest as JSON, JSONP or XML dat with the option to cache the results locally.
 
-## Instructions
+# Instructions
 
-### Hosted API
+## Hosted API
 
 The API URL is `http://share-count.appspot.com/` and allows the following parameters:
 
@@ -15,7 +15,9 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 | **format** (optional)   | `json`           | The format of the output. Can be either `json`, `jsonp` or `xml`. |
 | **callback** (optional) | `processShares`  | The JavaScript callback to execute. 
 
-### Examples 
+## Examples 
+
+### Social Shares as JSON Data
 
 `http://share-count.appspot.com/?url=http://google.com` outputs:
 ```javascript
@@ -35,6 +37,8 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 }
 ```
 
+### Social Shares as JSONP Data
+
 `http://share-count.appspot.com/?url=http://google.com&format=jsonp` and `http://share-count.appspot.com/?url=http://google.com&callback=processShares` would both output:
 ```javascript
 processShares({
@@ -52,6 +56,9 @@ processShares({
   }
 })
 ```
+
+### Social Shares as XML Data
+
 `http://share-count.appspot.com/?url=http://google.com&format=xml` outputs:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
