@@ -13,4 +13,4 @@ handlers:
   script: index.php
   
 - url: /36661b3adc7f4c716e442fed57c12bfb
-  script: clean_cache.php
+  script: cleanup.php
