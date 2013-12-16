@@ -35,7 +35,7 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 }
 ```
 
-`http://share-count.appspot.com/?url=http://google.com&format=jsonp` outputs:
+`http://share-count.appspot.com/?url=http://google.com&format=jsonp` and `http://share-count.appspot.com/?url=http://google.com&callback=processShares` would both output:
 ```javascript
 processShares({
   "url": "http://google.com",
