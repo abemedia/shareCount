@@ -18,7 +18,7 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 ### Examples 
 
 `http://share-count.appspot.com/?url=http://google.com` outputs:
-```
+```javascript
 {
   "url": "http://google.com",
   "shares": {
@@ -36,7 +36,7 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 ```
 
 `http://share-count.appspot.com/?url=http://google.com&format=jsonp` outputs:
-```
+```javascript
 processShares({
   "url": "http://google.com",
   "shares": {
@@ -53,7 +53,7 @@ processShares({
 })
 ```
 `http://share-count.appspot.com/?url=http://google.com&format=xml` outputs:
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <shares>
 	<url>http://google.com</url>
