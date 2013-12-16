@@ -77,7 +77,7 @@ class shareCount {
 			"pinterest"		=> "http://widgets.pinterest.com/v1/urls/count.json?source=6&url="
 		);
 		foreach($shareLinks as $service=>$url) {
-			$this->getCount($service, $url);
+			@$this->getCount($service, $url);
 		}
 		
 		if($this->format == 'xml') $data = $this->generateValidXmlFromObj($this->data, "shares");
