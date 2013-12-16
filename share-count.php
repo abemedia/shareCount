@@ -12,19 +12,19 @@ class shareCount {
 		$this->shares 		 = new stdClass;
 		$this->shares->count = new stdClass;
 		$this->shares->count->total = 0;
-		if(!$this->callback) $this->callback = (string) (isset($_REQUEST['callback']) ? $_REQUEST['callback'] : $this->config->$callback);
+		if(!$this->callback) $this->callback = (string) (isset($_REQUEST['callback']) ? $_REQUEST['callback'] : $this->config->callback);
 	}
 	
 	public function get() {
 		$this->shares->url = $this->url;
 		if(!$this->format) $this->format = $this->getFormat();
-		if($this->config->$use_cache) $this->getCache();
+		if($this->config->use_cache) $this->getCache();
 		else $this->getShares();
 	}
 	
 	// set format of the output
 	private function getFormat () {
-		if(!$this->format) $format = ($_REQUEST['format']?$_REQUEST['format']:$this->config->$format);
+		if(!$this->format) $format = ($_REQUEST['format']?$_REQUEST['format']:$this->config->format);
 		elseif(!$_REQUEST['format'])
 		switch($_REQUEST['format']) {
 			case "xml":
@@ -32,7 +32,7 @@ class shareCount {
 				header ("Content-Type:text/xml"); 
 				break;
 			case "jsonp": 
-				if(!$this->callback) $this->callback = $this->config->$callback;
+				if(!$this->callback) $this->callback = $this->config->callback;
 			case "json": // only here for reference
 			default:
 				if($this->callback) {
@@ -117,14 +117,14 @@ class shareCount {
 	
 	// get cached output - create if doesn't exist
 	private function getCache() {
-		if (!file_exists($this->config->$cache_directory)) {
-    		mkdir($this->config->$cache_directory, 0777, true);
+		if (!file_exists($this->config->cache_directory)) {
+    		mkdir($this->config->cache_directory, 0777, true);
 		}
 		$URi = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$cachefile = $this->config->$cache_directory . md5($URi) . '.' . $this->format;
+		$cachefile = $this->config->cache_directory . md5($URi) . '.' . $this->format;
 		$cachefile_created = ((@file_exists($cachefile))) ? @filemtime($cachefile) : 0;
 		@clearstatcache();
-		if (time() - $this->config->$cache_time < $cachefile_created) {
+		if (time() - $this->config->cache_time < $cachefile_created) {
 			//ob_start('ob_gzhandler');
 			@readfile($cachefile);
 			//ob_end_flush();
@@ -145,10 +145,10 @@ class shareCount {
 			while (false !== ($file = @readdir($handle))) {
 				if ($file != '.' and $file != '..') {
 					$file_created = ((@file_exists($file))) ? @filemtime($file) : 0;
-					if (time() - $this->config->$cache_time < $file_created) {
+					if (time() - $this->config->cache_time < $file_created) {
 						$i++;
 						echo $file . ' deleted.<br>';
-						@unlink($this->config->$cache_directory . '/' . $file);
+						@unlink($this->config->cache_directory . '/' . $file);
 					}
 				}
 			}
