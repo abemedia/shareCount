@@ -80,39 +80,69 @@ processShares({
 
 In the following example we're going to display a few pretty Bootstrap buttons with FontAwesome icons and the social share count in bubbles.
 
+### The JavaScript
 ```javascript
-// Get current URL from canonical tag
-var shareUrl = $("link[rel=canonical]").attr("href");
-// Ajax request to read share counts. Notice "&callback=?" is appended to the URL.
-$.getJSON('http://share-count.appspot.com/?url=' + encodeURIComponent(shareUrl) + "&callback=?", function(data) {
-	$(".js-share").each(function(index, el) {
-		var $service = $(el).parents(".share-btn").attr("data-service");
-		$(el).html(data['shares'][$service]);
-	});;
+$(document).ready(function () {
+    // Get current URL from canonical tag
+    var shareUrl = $("link[rel=canonical]").attr("href");
+    
+    // Ajax request to read share counts. Notice "&callback=?" is appended to the URL.
+    $.getJSON('http://share-count.appspot.com/?url=' + encodeURIComponent(shareUrl) + "&callback=?", function (data) {
+        shares = data.shares;
+        $(".count").each(function (index, el) {
+            var $service = $(el).parents(".share-btn").attr("data-service");
+            $(el).html(shares[$service]);
+        });
+    });
 });
 ```
+### The HTML
 ```html
-  <div class='js-share-btn js-total' data-service="total">
-    <div class="count"></div>
-    Shares 
-  </div>
-  <div class='js-share-btn' data-service="facebook">
-    <div class="count"></div>
-    <a class="btn btn-facebook"><i class="fa fa-facebook"></i> Share on Facebook</a>
-  </div>
-  <div class='js-share-btn' data-service="twitter">
-    <div class="count"></div>
-    <a class="btn btn-twitter"><i class="fa fa-twitter"></i> Share on Twitter</a>
-  </div>
-  <div class='js-share-btn' data-service="google">
-    <div class="count"></div>
-    <a class="btn btn-google"><i class="fa fa-google-plus"></i> Share on Google+</a>
-  </div>
+<div class='share'>
+    <div class='share-btn' data-service="total">
+        <div class="count h4"></div>
+        <div class="h3">SOCIAL</div>
+        <div class="h2">SHARES</div>
+    </div>
+    <div class='share-btn' data-service="facebook">
+        <div class="count"></div> <a class="btn btn-primary"><i class="fa fa-facebook fa-fw fa-3x"></i></a>
+    </div>
+    <div class='share-btn' data-service="twitter">
+        <div class="count"></div> <a class="btn btn-primary"><i class="fa fa-twitter fa-fw fa-3x"></i></a>
+    </div>
+    <div class='share-btn' data-service="google">
+        <div class="count"></div> <a class="btn btn-primary"><i class="fa fa-google-plus fa-fw fa-3x"></i></a>
+    </div>
+</div>
 ```
+### The CSS
+```css
+.share-btn {
+    float: left;
+    margin:60px 10px;
+    position: relative;
+}
+.share-btn .count {
+    border: 1px solid #ccc;
+    height: 40px;
+    line-height: 40px;
+    position: absolute;
+    border-radius: 4px;
+    padding: 0 5px;
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #fff;
+    bottom:100%;
+    left:0;
+    right:0;
+    margin-bottom:10px;
+}
+```
+### See a working demo
 
-### Demo
-
-Here is a working fiddle: http://jsfiddle.net/yD4X9/
+Here is a working fiddle: http://jsfiddle.net/LeNbh/
 
 ### Host it yourself
 
