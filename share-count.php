@@ -5,19 +5,51 @@ class shareCount {
 	public $url;
 	public $callback;
 	public $format;
+	private $config;
 	
 	function __construct() {
-		$this->shares = new stdClass;
-		$this->shares->total = 0;
-		$this->callback = (string) ($this->callback ? $this->callback : ($_REQUEST['callback'] ? $_REQUEST['callback'] : config::callback));
-		if(!$this->callback) $this->callback = (string) ($_REQUEST['callback'] ? $_REQUEST['callback'] : config::callback);
+		$this->config 		 = new config;
+		$this->shares 		 = new stdClass;
+		$this->shares->count = new stdClass;
+		$this->shares->count->total = 0;
+		if(!$this->callback) $this->callback = (string) (isset($_REQUEST['callback']) ? $_REQUEST['callback'] : $this->config->$callback);
 	}
-	function get() {
-		$this->format = $this->getFormat();
-		if(config::use_cache) $this->getCache();
+	
+	public function get() {
+		$this->shares->url = $this->url;
+		if(!$this->format) $this->format = $this->getFormat();
+		if($this->config->$use_cache) $this->getCache();
 		else $this->getShares();
 	}
-	function getShares() {
+	
+	// set format of the output
+	private function getFormat () {
+		if(!$this->format) $format = ($_REQUEST['format']?$_REQUEST['format']:$this->config->$format);
+		elseif(!$_REQUEST['format'])
+		switch($_REQUEST['format']) {
+			case "xml":
+				$format = 'xml';
+				header ("Content-Type:text/xml"); 
+				break;
+			case "jsonp": 
+				if(!$this->callback) $this->callback = $this->config->$callback;
+			case "json": // only here for reference
+			default:
+				if($this->callback) {
+					$format = 'jsonp';
+					header ("Content-Type: application/javascript"); 
+				}
+				else {
+					$format = 'json';
+					header ("Content-Type:application/json");
+				}
+				break;
+		}
+		return $format;
+	}
+	
+	// query API to get share counts
+	private function getShares() {
 		$this->url = ($this->url?$this->url:$_REQUEST['url']);
 		$shareLinks = array(
 			"facebook"		=> "https://api.facebook.com/method/links.getStats?format=json&urls=",
@@ -41,33 +73,8 @@ class shareCount {
 		return $data;
 	}
 	
-	// set format of the output
-	function getFormat () {
-		if(!$this->format) $this->format = ($_REQUEST['format'] ? $_REQUEST['format'] : config::format);
-		switch($this->format) {
-			case "xml":
-				$format = 'xml';
-				header ("Content-Type:text/xml"); 
-				break;
-			case "jsonp": 
-				if(!$this->callback) $this->callback = config::callback;
-			case "json": 
-			default:
-				if($this->callback) {
-					$format = 'jsonp';
-					header ("Content-Type: application/javascript"); 
-				}
-				else {
-					$format = 'json';
-					header ("Content-Type:application/json");
-				}
-				break;
-		}
-		return $format;
-	}
-	
 	// query API to get share counts
-	function getCount($service, $url){
+	private function getCount($service, $url){
 		$count = 0;
 		$data = @file_get_contents($url . ($this->url));
 		if ($data) {
@@ -102,21 +109,22 @@ class shareCount {
 					break;
 			}
 			$count =  (int)$count;
-			$this->shares->total += $count;
-			$this->shares->$service = $count;
+			$this->shares->count->total += $count;
+			$this->shares->count->$service = $count;
 		} 
 		return;
 	}
 	
-	function getCache() {
-		if (!file_exists(config::cache_directory)) {
-    		mkdir(config::cache_directory, 0777, true);
+	// get cached output - create if doesn't exist
+	private function getCache() {
+		if (!file_exists($this->config->$cache_directory)) {
+    		mkdir($this->config->$cache_directory, 0777, true);
 		}
 		$URi = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$cachefile = config::cache_directory . md5($URi) . '.' . $this->format;
+		$cachefile = $this->config->$cache_directory . md5($URi) . '.' . $this->format;
 		$cachefile_created = ((@file_exists($cachefile))) ? @filemtime($cachefile) : 0;
 		@clearstatcache();
-		if (time() - config::cache_time < $cachefile_created) {
+		if (time() - $this->config->$cache_time < $cachefile_created) {
 			//ob_start('ob_gzhandler');
 			@readfile($cachefile);
 			//ob_end_flush();
@@ -128,6 +136,25 @@ class shareCount {
 		@fwrite($fp, ob_get_contents());
 		@fclose($fp); 
 		ob_end_flush(); 
+	}
+	
+	// delete expired cache
+	public function cleanCache() {
+		$i = 0;
+		if ($handle = @opendir($config->cache_directory)) {
+			while (false !== ($file = @readdir($handle))) {
+				if ($file != '.' and $file != '..') {
+					$file_created = ((@file_exists($file))) ? @filemtime($file) : 0;
+					if (time() - $this->config->$cache_time < $file_created) {
+						$i++;
+						echo $file . ' deleted.<br>';
+						@unlink($this->config->$cache_directory . '/' . $file);
+					}
+				}
+			}
+			@closedir($handle);
+		}
+		if($i==0) echo 'Nothing to clean.';
 	}
 	
 	// output share counts as XML
