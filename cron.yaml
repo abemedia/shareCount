@@ -1,0 +1,4 @@
+cron:
+- description: clean old cache
+  url: /_cleanCache
+  schedule: every 24 hours

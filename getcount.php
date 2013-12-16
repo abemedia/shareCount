@@ -9,6 +9,7 @@ class shareCount {
 	public $format;
 	
 	function shareCount() {
+		require("config.php");
 		$this->shares = new stdClass;
 		$this->shares->total = 0;
 		$this->use_cache = ($_REQUEST['nocache'] ?false:true);

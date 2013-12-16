@@ -12,5 +12,5 @@ handlers:
 - url: /.*
   script: index.php
   
-- url: /([^/]+)/([^/]+).*
-  script: index.php?format=$1&url=$2
+- url: /_cleanup
+  script: clean_cache.php
