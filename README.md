@@ -78,7 +78,7 @@ processShares({
 var shareUrl = $("link[rel=canonical]").attr("href");
 // Ajax request to read share counts. Notice "&callback=?" is appended to the URL.
 $.getJSON('http://share-count.appspot.com/?url=' + encodeURIComponent(shareUrl) + "&callback=?", function(data) {
-	$(".js-share .count").each(function(index, el) {
+	$(".js-share").each(function(index, el) {
 		var $service = $(el).parents(".share-btn").attr("data-service");
 		$(el).html(data['shares'][$service]);
 	});;
@@ -91,13 +91,16 @@ $.getJSON('http://share-count.appspot.com/?url=' + encodeURIComponent(shareUrl) 
   </div>
   <div class='js-share-btn' data-service="facebook">
     <div class="count"></div>
-    <a class="btn btn-facebook"><i class="fa fa-facebook"></i> Share on Facebook</a></div>
+    <a class="btn btn-facebook"><i class="fa fa-facebook"></i> Share on Facebook</a>
+  </div>
   <div class='js-share-btn' data-service="twitter">
     <div class="count"></div>
-    <a class="btn btn-twitter"><i class="fa fa-twitter"></i> Share on Twitter</a></div>
+    <a class="btn btn-twitter"><i class="fa fa-twitter"></i> Share on Twitter</a>
+  </div>
   <div class='js-share-btn' data-service="google">
     <div class="count"></div>
-    <a class="btn btn-google"><i class="fa fa-google-plus"></i> Share on Google+</a></div>
+    <a class="btn btn-google"><i class="fa fa-google-plus"></i> Share on Google+</a>
+  </div>
 ```
 
 ### Host it yourself
