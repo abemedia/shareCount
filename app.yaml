@@ -12,5 +12,5 @@ handlers:
 - url: /
   script: index.php
   
-- url: /_cleanup
+- url: /36661b3adc7f4c716e442fed57c12bfb
   script: clean_cache.php

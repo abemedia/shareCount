@@ -1,4 +1,4 @@
 cron:
 - description: clean old cache
-  url: /_cleanCache
+  url: /36661b3adc7f4c716e442fed57c12bfb
   schedule: every 24 hours
