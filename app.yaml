@@ -9,7 +9,7 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: /.*
+- url: /
   script: index.php
   
 - url: /_cleanup
