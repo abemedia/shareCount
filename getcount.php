@@ -1,25 +1,20 @@
 <?php
+require("config.php");
 class shareCount {
-	public $use_cache;
-	public $cache_directory;
-	public $cache_time;
 	public $shares;
 	public $url;
 	public $callback;
 	public $format;
 	
-	function shareCount() {
-		require("config.php");
+	function __construct() {
 		$this->shares = new stdClass;
 		$this->shares->total = 0;
-		$this->use_cache = ($_REQUEST['nocache'] ?false:true);
-		$this->cache_directory = './cache/';
-		$this->cache_time = 86400; // 86400 = 1 day
-		$this->callback = (string) ($this->callback?$this->callback:$_REQUEST['callback']);
+		$this->callback = (string) ($this->callback ? $this->callback : ($_REQUEST['callback'] ? $_REQUEST['callback'] : config::callback));
+		if(!$this->callback) $this->callback = (string) ($_REQUEST['callback'] ? $_REQUEST['callback'] : config::callback);
 	}
 	function get() {
 		$this->format = $this->getFormat();
-		if($this->use_cache) $this->getCache();
+		if(config::use_cache) $this->getCache();
 		else $this->getShares();
 	}
 	function getShares() {
@@ -48,15 +43,15 @@ class shareCount {
 	
 	// set format of the output
 	function getFormat () {
-		if($this->format) return $this->format;
-		switch($_REQUEST['format']) {
+		if(!$this->format) $this->format = ($_REQUEST['format'] ? $_REQUEST['format'] : config::format);
+		switch($this->format) {
 			case "xml":
 				$format = 'xml';
 				header ("Content-Type:text/xml"); 
 				break;
-			case "jsonp": // only here for reference
-				if(!$this->callback) $this->callback = "jsShareCount";
-			case "json":
+			case "jsonp": 
+				if(!$this->callback) $this->callback = config::callback;
+			case "json": 
 			default:
 				if($this->callback) {
 					$format = 'jsonp';
@@ -114,14 +109,14 @@ class shareCount {
 	}
 	
 	function getCache() {
-		if (!file_exists($this->cache_directory)) {
-    		mkdir($this->cache_directory, 0777, true);
+		if (!file_exists(config::cache_directory)) {
+    		mkdir(config::cache_directory, 0777, true);
 		}
 		$URi = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$cachefile = $this->cache_directory . md5($URi) . '.' . $this->format;
+		$cachefile = config::cache_directory . md5($URi) . '.' . $this->format;
 		$cachefile_created = ((@file_exists($cachefile))) ? @filemtime($cachefile) : 0;
 		@clearstatcache();
-		if (time() - $this->cache_time < $cachefile_created) {
+		if (time() - config::cache_time < $cachefile_created) {
 			//ob_start('ob_gzhandler');
 			@readfile($cachefile);
 			//ob_end_flush();
