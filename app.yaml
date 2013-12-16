@@ -1,0 +1,15 @@
+application: share-count
+version: 1
+runtime: php
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /index\.php
+  script: index.php
+- url: /getcount\.php
+  script: getcount.php
