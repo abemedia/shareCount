@@ -15,8 +15,6 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 | **format** (optional)   | `json`           | The format of the output. Can be either `json`, `jsonp` or `xml`. |
 | **callback** (optional) | `processShares`  | The JavaScript callback to execute. 
 
-## Examples 
-
 ### Social Shares as JSON Data
 
 `http://share-count.appspot.com/?url=http://google.com` outputs:
@@ -80,6 +78,8 @@ processShares({
 
 ## jQuery & Bootstrap Example
 
+In the following example we're going to display a few pretty Bootstrap buttons with FontAwesome icons and the social share count in bubbles.
+
 ```javascript
 // Get current URL from canonical tag
 var shareUrl = $("link[rel=canonical]").attr("href");
@@ -109,6 +109,10 @@ $.getJSON('http://share-count.appspot.com/?url=' + encodeURIComponent(shareUrl) 
     <a class="btn btn-google"><i class="fa fa-google-plus"></i> Share on Google+</a>
   </div>
 ```
+
+### Demo
+
+Here is a working fiddle: http://jsfiddle.net/yD4X9/
 
 ### Host it yourself
 
