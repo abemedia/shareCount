@@ -9,7 +9,5 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: /index\.php
+- url: /.*
   script: index.php
-- url: /getcount\.php
-  script: getcount.php
