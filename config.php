@@ -1,6 +1,6 @@
 <?php
 class Config {
-	public $use_cache = false;
+	public $use_cache = true;
 	public $cache_directory = './cache/';
 	public $cache_time = "86400"; // in seconds; 86400 seconds = 24h
 	

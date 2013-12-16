@@ -51,7 +51,7 @@ class shareCount {
 				header ("Content-Type: application/javascript"); 
 				break;
 			case "json": // only here for reference
-				if($this->setVar('callback')) {
+				if($this->setVar('callback', true)) {
 					$this->format = 'jsonp';
 					header ("Content-Type: application/javascript"); 
 				}
