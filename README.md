@@ -155,7 +155,7 @@ Here is a working fiddle: http://jsfiddle.net/XM7x7/
 Download the package and unzip in on your computer. Open config.php with a text-editor of your choice and amend the few configuration values, then upload the whole folder to your server.
 
 ## Copyright
-&copy; 2013 Adam Bouqdib - http://abemedia.co.uk
+&copy; 2013-2014 Adam Bouqdib - http://abemedia.co.uk
 
 Released under GNU GPL 2. See licence.md for further information.
 
