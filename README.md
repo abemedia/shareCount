@@ -15,7 +15,7 @@ The API URL is `http://count.donreach.com/` and allows the following parameters:
 
 ### Social Shares as JSON Data
 
-`http://count.donreach.com/?url=http://google.com` outputs:
+Since JSON is the default format `http://count.donreach.com/?url=http://google.com` outputs:
 ```javascript
 {
   "url": "http://google.com",
@@ -35,7 +35,7 @@ The API URL is `http://count.donreach.com/` and allows the following parameters:
 
 ### Social Shares as JSONP Data
 
-`http://count.donreach.com/?url=http://google.com&format=jsonp` and `http://count.donreach.com/?url=http://google.com&callback=processShares` would both output:
+To use JSONP you can either specify the format or set a callback. For example both `http://count.donreach.com/?url=http://google.com&format=jsonp` and `http://count.donreach.com/?url=http://google.com&callback=processShares` would both output:
 ```javascript
 processShares({
   "url": "http://google.com",
@@ -55,7 +55,7 @@ processShares({
 
 ### Social Shares as XML Data
 
-`http://count.donreach.com/?url=http://google.com&format=xml` outputs:
+To get the data in XML just set the format variable: `http://count.donreach.com/?url=http://google.com&format=xml` outputs:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <data>
