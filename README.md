@@ -5,7 +5,7 @@ A simple PHP script to fetch the count of social shares on Facebook, Twitter, Go
 
 ## Instructions
 
-The API URL is `http://share-count.appspot.com/` and allows the following parameters:
+The API URL is `http://count.donreach.com/` and allows the following parameters:
 
 |  Parameter              |  Default         |  Descriptio                                                       |
 | ----------------------- | ---------------- | ----------------------------------------------------------------- |
@@ -15,7 +15,7 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 
 ### Social Shares as JSON Data
 
-`http://share-count.appspot.com/?url=http://google.com` outputs:
+`http://count.donreach.com/?url=http://google.com` outputs:
 ```javascript
 {
   "url": "http://google.com",
@@ -35,7 +35,7 @@ The API URL is `http://share-count.appspot.com/` and allows the following parame
 
 ### Social Shares as JSONP Data
 
-`http://share-count.appspot.com/?url=http://google.com&format=jsonp` and `http://share-count.appspot.com/?url=http://google.com&callback=processShares` would both output:
+`http://count.donreach.com/?url=http://google.com&format=jsonp` and `http://count.donreach.com/?url=http://google.com&callback=processShares` would both output:
 ```javascript
 processShares({
   "url": "http://google.com",
@@ -55,7 +55,7 @@ processShares({
 
 ### Social Shares as XML Data
 
-`http://share-count.appspot.com/?url=http://google.com&format=xml` outputs:
+`http://count.donreach.com/?url=http://google.com&format=xml` outputs:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <data>
@@ -85,7 +85,7 @@ $(document).ready(function () {
     var shareUrl = $("link[rel=canonical]").attr("href");
     
     // Ajax request to read share counts. Notice "&callback=?" is appended to the URL to define it as JSONP.
-    $.getJSON('http://share-count.appspot.com/?url=' + encodeURIComponent(shareUrl) + "&callback=?", function (data) {
+    $.getJSON('http://count.donreach.com/?url=' + encodeURIComponent(shareUrl) + "&callback=?", function (data) {
         shares = data.shares;
         $(".count").each(function (index, el) {
             service = $(el).parents(".share-btn").attr("data-service");
@@ -149,6 +149,10 @@ $(document).ready(function () {
 ### See a working demo
 
 Here is a working fiddle: http://jsfiddle.net/XM7x7/
+
+## Secure connection (HTTPS)
+
+To use the hosted API on a secure connection use `https://share-count.appspot.com/` instead of `http://count.donreach.com/`
 
 ## Host it yourself
 
