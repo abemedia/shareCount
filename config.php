@@ -2,7 +2,7 @@
 class Config {
 	
 	/* cache settings */
-	public $cache = 2;			// 0 = no cache, 1 = memcache with filecache fallback, 2 = memcache only, 3 = filecache only
+	public $cache = 2;			// 0 = no cache, 1 = memcached with filecache fallback, 2 = memcached only, 3 = filecache only
 	public $cache_time = "86400"; 		// in seconds; 86400 seconds = 24h
 	public $cache_directory = './cache/';	// needs trailing slash!
 	

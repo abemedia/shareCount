@@ -92,7 +92,21 @@ class shareCount {
 	// query API to get share counts
 	private function getCount($service, $url){
 		$count = 0;
-		$data = @file_get_contents($url . $this->url);
+		$url = $url . $this->url;
+		
+		// check if cURL exists - if not use file_get_contents
+		if(function_exists('curl_version')) {
+			$ch = curl_init($url); 
+			curl_setopt($ch, CURLOPT_POST, true); 
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $content); 
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+			$output = curl_exec ($ch); 
+			curl_close ($ch);
+		}
+		else {
+			$data = @file_get_contents($url);
+		}
+		
 		if ($data) {
 			switch($service) {
 			case "facebook":
@@ -136,10 +150,10 @@ class shareCount {
 	
 	// Get data and return it. If cache is active check for cached data and create it if unsuccessful.
 	private function getData() {
+		if($this->cache) $key = md5($this->url) . '.' . ($this->format == 'jsonp' ? 'json' : $this->format);
 		// memcache
 		if($this->cache == 1 | $this->cache == 2) {
-			$key = md5($this->url) . '.' . ($this->format == 'jsonp' ? 'json' : $this->format);
-			$memcache = new Memcache;
+			$memcache = new Memcached;
 			$data = $memcache->get($key);
 			if ($data === false) {
 				$data = ($this->cache == 1 ? $this->getCacheFile($key) : $this->getShares());
@@ -178,7 +192,7 @@ class shareCount {
 	public function cleanCache($kill = null) {
 		// flush memcache
 		if($kill) {
-			$memcache = new Memcache;
+			$memcache = new Memcached;
 			$memcache->flush();
 		}
 		// delete cache files
