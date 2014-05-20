@@ -1,7 +1,7 @@
 Social Share Count API
 ===========
 
-A simple PHP script to fetch the count of social shares on Facebook, Twitter, Google +1, Reddit, LinkedIn, Delicious, StumbleUpon and Pinterest as JSON, JSONP or XML data with the option to cache the results using memcache and/or file cache.
+A simple PHP script to fetch the count of social shares on Facebook, Twitter, Google +1, Reddit, LinkedIn, Delicious, StumbleUpon and Pinterest as JSON, JSONP or XML data with the option to cache the results using memcache, APC or file cache.
 
 ## Instructions
 
@@ -152,7 +152,7 @@ Here is a working fiddle: http://jsfiddle.net/XM7x7/
 
 ## Secure connection (HTTPS)
 
-To use the hosted API on a secure connection use `https://share-count.appspot.com/` instead of `http://count.donreach.com/`
+To use the hosted API on a secure connection use `https://count-abemedia.rhcloud.com/` instead of `http://count.donreach.com/`
 
 ## Host it yourself
 
