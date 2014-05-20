@@ -71,12 +71,11 @@ class shareCount {
 		"facebook"    => "https://api.facebook.com/method/links.getStats?format=json&urls=",
 		"twitter"     => "http://urls.api.twitter.com/1/urls/count.json?url=",
 		"google"      => "https://plusone.google.com/_/+1/fastbutton?url=",
-		"reddit"      => "http://www.reddit.com/api/info.json?&url=",
 		"linkedin"    => "http://www.linkedin.com/countserv/count/share?format=json&url=",
-		/*"digg"      => "http://widgets.digg.com/buttons/count?url=",*/
 		"delicious"   => "http://feeds.delicious.com/v2/json/urlinfo/data?url=",
 		"stumbleupon" => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=",
-		"pinterest"   => "http://widgets.pinterest.com/v1/urls/count.json?source=6&url="
+		"pinterest"   => "http://widgets.pinterest.com/v1/urls/count.json?source=6&url=",
+		"reddit"      => "http://www.reddit.com/api/info.json?&url="
 		);
 	
 		foreach($shareLinks as $service=>$url) {
@@ -92,20 +91,7 @@ class shareCount {
 	// query API to get share counts
 	private function getCount($service, $url){
 		$count = 0;
-		$url = $url . $this->url;
-		
-		// check if cURL exists - if not use file_get_contents
-		if(function_exists('curl_version')) {
-			$ch = curl_init($url); 
-			curl_setopt($ch, CURLOPT_POST, true); 
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $content); 
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-			$output = curl_exec ($ch); 
-			curl_close ($ch);
-		}
-		else {
-			$data = @file_get_contents($url);
-		}
+		$data = @file_get_contents($url . $this->url);
 		
 		if ($data) {
 			switch($service) {
@@ -126,8 +112,7 @@ class shareCount {
 				break;
 			case "reddit":
 				$data = json_decode($data);
-				if(count($data->data->children))
-				$count = $data->data->children[0]->data->score;
+				if(count($data->data->children)) $count = $data->data->children[0]->data->score;
 				break;
 			case "delicious":
 				$data = json_decode($data);
@@ -152,12 +137,33 @@ class shareCount {
 	private function getData() {
 		if($this->cache) $key = md5($this->url) . '.' . ($this->format == 'jsonp' ? 'json' : $this->format);
 		// memcache
-		if($this->cache == 1 | $this->cache == 2) {
-			$memcache = new Memcached;
-			$data = $memcache->get($key);
-			if ($data === false) {
-				$data = ($this->cache == 1 ? $this->getCacheFile($key) : $this->getShares());
-				$memcache->set($key, $data, $this->cache_time);
+		if($this->cache == 1) {
+			if(!function_exists('memcache_connect')) 
+			{ 
+				die('Memcache isn\'t installed'); 
+			} 
+			else
+			{
+				$memcache = new Memcache;
+				$memcache->addServer($this->config->cache_server, $this->config->cache_port, $this->config->cache_persistent);
+				if(!$memcache->connect($this->config->cache_server, $this->config->cache_port)) 
+				{ 
+					die('Couldn\'t connect to Memcache host'); 
+				} 
+				$data = $memcache->get($key);
+				if ($data === false) {
+					$data = $this->getShares();
+					$memcache->set($key, $data, $this->cache_time);
+				}
+			}
+		}
+		// apc
+		elseif($this->cache == 2) {
+			if (apc_exists($key)) {
+				$data = apc_fetch($key);
+			}
+			else {
+				apc_store($key, $data, $this->cache_time);
 			}
 		}
 		// file cache
@@ -192,7 +198,7 @@ class shareCount {
 	public function cleanCache($kill = null) {
 		// flush memcache
 		if($kill) {
-			$memcache = new Memcached;
+			$memcache = new Memcache;
 			$memcache->flush();
 		}
 		// delete cache files
