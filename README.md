@@ -152,7 +152,7 @@ Here is a working fiddle: http://jsfiddle.net/XM7x7/
 
 ## Secure connection (HTTPS)
 
-To use the hosted API on a secure connection use `https://count-abemedia.rhcloud.com/` instead of `http://count.donreach.com/`
+To use the hosted API on a secure connection use `https://count-donreach.rhcloud.com/` instead of `http://count.donreach.com/`
 
 ## Host it yourself
 

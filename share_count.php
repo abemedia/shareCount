@@ -43,24 +43,24 @@ class shareCount {
 	// set format of the output
 	private function setFormat ($format) {
 		switch($format) {
-		case "xml":
-			$this->format = 'xml';
-			header ("Content-Type:text/xml"); 
-			break;
-		case "jsonp": 
-			$this->format = 'jsonp';
-			header ("Content-Type: application/javascript"); 
-			break;
-		case "json": // only here for reference
-		default:
-			if($this->getVar('callback', true)) {
+			case "xml":
+				$this->format = 'xml';
+				header ("Content-Type:text/xml"); 
+				break;
+			case "jsonp": 
 				$this->format = 'jsonp';
 				header ("Content-Type: application/javascript"); 
-			}
-			else {
-				$this->format = 'json';
-				header ("Content-Type:application/json");
-			}
+				break;
+			case "json": // only here for reference
+			default:
+				if($this->getVar('callback', true)) {
+					$this->format = 'jsonp';
+					header ("Content-Type: application/javascript"); 
+				}
+				else {
+					$this->format = 'json';
+					header ("Content-Type:application/json");
+				}
 		}
 		return $format;
 	}
@@ -77,7 +77,7 @@ class shareCount {
 			"delicious"   => "http://feeds.delicious.com/v2/json/urlinfo/data?url=",
 			"reddit"      => "http://www.reddit.com/api/info.json?&url="
 		);
-	
+		
 		foreach($shareLinks as $service=>$url) {
 			@$this->getCount($service, $url . $this->url);
 		}
@@ -270,4 +270,5 @@ class shareCount {
 			$xml = htmlspecialchars($array, ENT_QUOTES);
 		}
 		return $xml;
-	}}
+	}
+}
