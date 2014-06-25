@@ -7,7 +7,7 @@ A simple PHP script to fetch the count of social shares on Facebook, Twitter, Go
 
 The API URL is `http://count.donreach.com/` and allows the following parameters:
 
-|  Parameter              |  Default         |  Descriptio                                                       |
+|  Parameter              |  Default         |  Description                                                      |
 | ----------------------- | ---------------- | ----------------------------------------------------------------- |
 | **url**  (required)     | `none`           | The URL of the page you want to fetch the social shares for.      |
 | **format** (optional)   | `json`           | The format of the output. Can be either `json`, `jsonp` or `xml`. |
