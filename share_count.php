@@ -42,6 +42,7 @@ class shareCount {
 	
 	// set format of the output
 	private function setFormat ($format) {
+	
 		switch($format) {
 			case "xml":
 				$this->format = 'xml';
@@ -79,8 +80,7 @@ class shareCount {
 		);
 		
 		foreach($shareLinks as $service=>$url) {
-			$link = ($service == "delicious") ? md5($this->url) : $this->url;
-			@$this->getCount($service, $url . $link);
+			@$this->getCount($service, $url . $this->url);
 		}
 		
 		if($this->format == 'xml') $data = $this->generateValidXmlFromObj($this->data, "data");
