@@ -79,7 +79,8 @@ class shareCount {
 		);
 		
 		foreach($shareLinks as $service=>$url) {
-			@$this->getCount($service, $url . $this->url);
+			$link = ($service == "delicious") ? md5($this->url) : $this->url;
+			@$this->getCount($service, $url . $link);
 		}
 		
 		if($this->format == 'xml') $data = $this->generateValidXmlFromObj($this->data, "data");
