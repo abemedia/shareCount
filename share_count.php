@@ -72,7 +72,7 @@ class shareCount {
 			"facebook"    => "https://api.facebook.com/method/links.getStats?format=json&urls=",
 			"twitter"     => "http://urls.api.twitter.com/1/urls/count.json?url=",
 			"google"      => "https://plusone.google.com/_/+1/fastbutton?url=",
-			"linkedin"    => "http://www.linkedin.com/countserv/count/share?format=json&url=",
+			"linkedin"    => "https://www.linkedin.com/countserv/count/share?format=json&url=",
 			"pinterest"   => "http://api.pinterest.com/v1/urls/count.json?url=",
 			"stumbleupon" => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=",
 			"delicious"   => "http://feeds.delicious.com/v2/json/urlinfo/data?url=",
