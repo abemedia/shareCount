@@ -77,7 +77,8 @@ class shareCount {
 			"stumbleupon" => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=",
 			"delicious"   => "http://feeds.delicious.com/v2/json/urlinfo/data?url=",
 			"reddit"      => "http://www.reddit.com/api/info.json?&url=",
-			"buffer"      => "https://api.bufferapp.com/1/links/shares.json?url="
+			"buffer"      => "https://api.bufferapp.com/1/links/shares.json?url=",
+			"vk"          => "https://vk.com/share.php?act=count&index=1&url="
 		);
 		
 		foreach($shareLinks as $service=>$url) {
@@ -142,6 +143,10 @@ class shareCount {
 			case "buffer":
 				$data = json_decode($data);
 				$count = $data->shares;
+				break;
+			case "vk":
+			    $data = preg_match('/^VK.Share.count\(\d+,\s+(\d+)\);$/i', $data, $matches);
+				$count = $matches[1];
 				break;
 			default:
 				// kill the script if trying to fetch from a provider that doesn't exist
