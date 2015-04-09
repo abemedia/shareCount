@@ -130,8 +130,11 @@ class shareCount {
                 $count = (is_array($data) ? $data[0]->total_count : $data->total_count);
                 break;
             case "google":
-                preg_match( '/window\.__SSR = {c: ([\d]+)/', $data, $matches );
-                if(isset($matches[0])) $count = str_replace( 'window.__SSR = {c: ', '', $matches[0] );
+                preg_match( '/window\.__SSR = {c: (\d+(?:\.\d+)+)/', $data, $matches);
+				if(isset($matches[0]) && isset($matches[1])) {
+					$bits = explode('.',$matches[1]);
+					$count = (int)( empty($bits[0]) ?: $bits[0]) . ( empty($bits[1]) ?: $bits[1] ); 
+				}
                 break;
             case "pinterest":
                 $data = substr( $data, 13, -1);
