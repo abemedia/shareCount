@@ -38,7 +38,7 @@ Since JSON is the default format `https://count.donreach.com/?url=http://9gag.co
 ### Social Shares as JSONP Data
 
 To use JSONP you can either specify the format or set a callback.  
-For example both `https://count.donreach.com/?url=http://9gag.com&format=jsonp` and `https://count.donreach.com/?url=http://9gag.com&callback=processShares` would both output:
+For example both `https://count.donreach.com/?url=http://9gag.com&format=jsonp` and `https://count.donreach.com/?url=http://9gag.com&callback=processShares` would output:
 ```javascript
 processShares({
 	url: "http://9gag.com",
