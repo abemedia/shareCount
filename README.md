@@ -15,61 +15,66 @@ The API URL is `https://count.donreach.com/` and allows the following parameters
 
 ### Social Shares as JSON Data
 
-Since JSON is the default format `https://count.donreach.com/?url=http://google.com` outputs:
+Since JSON is the default format `https://count.donreach.com/?url=http://9gag.com` outputs:
 ```javascript
 {
-  "url": "http://google.com",
-  "shares": {
-    "total": 12460819,
-    "facebook": 7988103,
-    "twitter": 7485,
-    "google": 4440601,
-    "reddit": 0,
-    "linkedin": 10387,
-    "delicious": 3815,
-    "stumbleupon": 254953,
-    "pinterest": 10428
-  }
+	url: "http://9gag.com",
+	shares: {
+		total: 635992,
+		facebook: 206570,
+		twitter: 119585,
+		google: 89490,
+		linkedin: 618,
+		pinterest: 5234,
+		stumbleupon: 203013,
+		delicious: 0,
+		reddit: 0,
+		buffer: 752,
+		vk: 10730
+	}
 }
 ```
 
 ### Social Shares as JSONP Data
 
-To use JSONP you can either specify the format or set a callback. For example both `https://count.donreach.com/?url=http://google.com&format=jsonp` and `https://count.donreach.com/?url=http://google.com&callback=processShares` would both output:
+To use JSONP you can either specify the format or set a callback. For example both `https://count.donreach.com/?url=http://9gag.com&format=jsonp` and `https://count.donreach.com/?url=http://9gag.com&callback=processShares` would both output:
 ```javascript
 processShares({
-  "url": "http://google.com",
-  "shares": {
-    "total": 12460819,
-    "facebook": 7988103,
-    "twitter": 7485,
-    "google": 4440601,
-    "reddit": 0,
-    "linkedin": 10387,
-    "delicious": 3815,
-    "stumbleupon": 254953,
-    "pinterest": 10428
-  }
+	url: "http://9gag.com",
+	shares: {
+		total: 635992,
+		facebook: 206570,
+		twitter: 119585,
+		google: 89490,
+		linkedin: 618,
+		pinterest: 5234,
+		stumbleupon: 203013,
+		delicious: 0,
+		reddit: 0,
+		buffer: 752,
+		vk: 10730
+	}
 })
 ```
 
 ### Social Shares as XML Data
 
-To get the data in XML just set the format variable: `https://count.donreach.com/?url=http://google.com&format=xml` outputs:
+To get the data in XML just set the format variable: `https://count.donreach.com/?url=http://9gag.com&format=xml` outputs:
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
 <data>
-	<url>http://google.com</url>
+	<url>http://9gag.com</url>
 	<shares>
-		<total>12460918</total>
-		<facebook>7988103</facebook>
-		<twitter>7485</twitter>
-		<google>4440700</google>
+		<total>432979</total>
+		<facebook>206570</facebook>
+		<twitter>119585</twitter>
+		<google>89490</google>
+		<linkedin>618</linkedin>
+		<pinterest>5234</pinterest>
+		<stumbleupon>0</stumbleupon>
+		<delicious>0</delicious>
 		<reddit>0</reddit>
-		<linkedin>10387</linkedin>
-		<delicious>3815</delicious>
-		<stumbleupon>254953</stumbleupon>
-		<pinterest>10428</pinterest>
+		<buffer>752</buffer>
+		<vk>10730</vk>
 	</shares>
 </data>
 ```
