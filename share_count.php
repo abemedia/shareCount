@@ -40,7 +40,7 @@ class shareCount {
         if(!$this->url) die("Error: No URL specified.");
         
         $this->setFormat($this->format ?: $this->getVar('format'));
-        $this->callback            = $this->callback ?: $this->getVar('callback');
+        $this->callback            = $this->callback ?: $this->getCallback();
         $this->data                = new stdClass;
         $this->data->url           = $this->url;
         $this->data->shares        = new stdClass;
@@ -50,6 +50,17 @@ class shareCount {
         return $data;
     }
     
+    // validate and return the callback
+	private function getCallback(){
+		return filter_var($this->getVar('callback'), FILTER_VALIDATE_REGEXP,
+			array(
+				"options" => array(
+					"regexp"=>"/^\w+$/"
+					)
+				)
+			);        
+	}
+	
     // set format of the output
     private function setFormat ($format) {
         switch($format) {
@@ -63,7 +74,7 @@ class shareCount {
                 break;
             case "json": // only here for reference
             default:
-                if($this->getVar('callback', true)) {
+                if($this->getCallback()) {
                     $this->format = 'jsonp';
                     header ("Content-Type: application/javascript"); 
                 }
