@@ -123,7 +123,6 @@ class shareCount {
             $data = @file_get_contents($url);
         }
         
-        $count = 0;
         if ($data) {
             switch($service) {
             case "facebook":
@@ -172,7 +171,9 @@ class shareCount {
             $count = (int) $count;
             $this->data->shares->total += $count;
             $this->data->shares->$service = $count;
-        } 
+        } else{
+            $this->data->shares->$service = '';
+        }
         return;
     }
     
