@@ -40,7 +40,7 @@ class shareCount {
         if(!$this->url) die("Error: No URL specified.");
         
         $this->setFormat($this->format ?: $this->getVar('format'));
-        $this->callback            = $this->callback ?: $this->getVar('callback');
+        $this->callback            = $this->callback ?: $this->getCallback();
         $this->data                = new stdClass;
         $this->data->url           = $this->url;
         $this->data->shares        = new stdClass;
@@ -50,6 +50,17 @@ class shareCount {
         return $data;
     }
     
+    // validate and return the callback
+	private function getCallback(){
+		return filter_var($this->getVar('callback'), FILTER_VALIDATE_REGEXP,
+			array(
+				"options" => array(
+					"regexp"=>"/^\w+$/"
+					)
+				)
+			);        
+	}
+	
     // set format of the output
     private function setFormat ($format) {
         switch($format) {
@@ -63,7 +74,7 @@ class shareCount {
                 break;
             case "json": // only here for reference
             default:
-                if($this->getVar('callback', true)) {
+                if($this->getCallback()) {
                     $this->format = 'jsonp';
                     header ("Content-Type: application/javascript"); 
                 }
@@ -115,6 +126,7 @@ class shareCount {
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
             $data = curl_exec($ch);
             curl_close($ch);
         }
@@ -122,7 +134,6 @@ class shareCount {
             $data = @file_get_contents($url);
         }
         
-        $count = 0;
         if ($data) {
             switch($service) {
             case "facebook":
@@ -130,8 +141,11 @@ class shareCount {
                 $count = (is_array($data) ? $data[0]->total_count : $data->total_count);
                 break;
             case "google":
-                preg_match( '/window\.__SSR = {c: ([\d]+)/', $data, $matches );
-                if(isset($matches[0])) $count = str_replace( 'window.__SSR = {c: ', '', $matches[0] );
+                preg_match( '/window\.__SSR = {c: (\d+(?:\.\d+)+)/', $data, $matches);
+				if(isset($matches[0]) && isset($matches[1])) {
+					$bits = explode('.',$matches[1]);
+					$count = (int)( empty($bits[0]) ?: $bits[0]) . ( empty($bits[1]) ?: $bits[1] ); 
+				}
                 break;
             case "pinterest":
                 $data = substr( $data, 13, -1);
@@ -171,7 +185,9 @@ class shareCount {
             $count = (int) $count;
             $this->data->shares->total += $count;
             $this->data->shares->$service = $count;
-        } 
+        } else{
+            $this->data->shares->$service = '';
+        }
         return;
     }
     
