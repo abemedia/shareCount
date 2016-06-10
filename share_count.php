@@ -51,16 +51,16 @@ class shareCount {
     }
     
     // validate and return the callback
-	private function getCallback(){
-		return filter_var($this->getVar('callback'), FILTER_VALIDATE_REGEXP,
-			array(
-				"options" => array(
-					"regexp"=>"/^\w+$/"
-					)
-				)
-			);        
-	}
-	
+    private function getCallback(){
+        return filter_var($this->getVar('callback'), FILTER_VALIDATE_REGEXP,
+            array(
+                "options" => array(
+                    "regexp"=>"/^\w+$/"
+                    )
+                )
+            );        
+    }
+    
     // set format of the output
     private function setFormat ($format) {
         switch($format) {
@@ -93,7 +93,7 @@ class shareCount {
         $shareLinks = array(
             "facebook"    => "https://api.facebook.com/method/links.getStats?format=json&urls=",
             "twitter"     => "http://urls.api.twitter.com/1/urls/count.json?url=",
-            "google"      => "https://plusone.google.com/_/+1/fastbutton?url=",
+            "google"      => "https://apis.google.com/u/0/se/0/_/+1/sharebutton?plusShare=true&url=",
             "linkedin"    => "https://www.linkedin.com/countserv/count/share?format=json&url=",
             "pinterest"   => "http://api.pinterest.com/v1/urls/count.json?url=",
             "stumbleupon" => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=",
@@ -141,11 +141,8 @@ class shareCount {
                 $count = (is_array($data) ? $data[0]->total_count : $data->total_count);
                 break;
             case "google":
-                preg_match( '/window\.__SSR = {c: (\d+(?:\.\d+)+)/', $data, $matches);
-				if(isset($matches[0]) && isset($matches[1])) {
-					$bits = explode('.',$matches[1]);
-					$count = (int)( empty($bits[0]) ?: $bits[0]) . ( empty($bits[1]) ?: $bits[1] ); 
-				}
+                preg_match( '/ld:\[[^,]+,\[\d+,(\d+),/', $data, $matches);
+                $count = (int) $matches[1]; 
                 break;
             case "pinterest":
                 $data = substr( $data, 13, -1);

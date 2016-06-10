@@ -13,13 +13,6 @@ class Config {
     /* filecache settings - only required if cache set to file */
     public $cache_directory = './cache/'; // needs trailing slash!
     
-    /* database settings - only required to track shares */
-    public $db_type = 'mysql';
-    public $db_host = 'localhost';
-    public $db_name = 'sharecount';
-    public $db_user = 'root';
-    public $db_pass = '';
-    
     /* default output settings - ignored if url parameter has been passed */
     public $format = 'json';              // 'json', 'jsonp' or 'xml'
     public $callback = 'processShares';   // default jsonp callback function name
