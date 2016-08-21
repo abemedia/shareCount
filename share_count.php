@@ -91,16 +91,14 @@ class shareCount {
         $url = $url ?: $this->url;
         
         $shareLinks = array(
-            "facebook"    => "https://api.facebook.com/method/links.getStats?format=json&urls=",
-            "twitter"     => "http://urls.api.twitter.com/1/urls/count.json?url=",
+            "facebook"    => "http://graph.facebook.com/?ids=",
             "google"      => "https://apis.google.com/u/0/se/0/_/+1/sharebutton?plusShare=true&url=",
             "linkedin"    => "https://www.linkedin.com/countserv/count/share?format=json&url=",
             "pinterest"   => "http://api.pinterest.com/v1/urls/count.json?url=",
             "stumbleupon" => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=",
-            "delicious"   => "http://feeds.delicious.com/v2/json/urlinfo/data?url=",
             "reddit"      => "http://www.reddit.com/api/info.json?&url=",
             "buffer"      => "https://api.bufferapp.com/1/links/shares.json?url=",
-            "vk"          => "https://vk.com/share.php?act=count&index=1&url="
+            "vk"          => "http://vk.com/share.php?act=count&index=1&url="
         );
         
         foreach($shareLinks as $service=>$provider) {
@@ -122,7 +120,7 @@ class shareCount {
     private function getCount($service, $url){
         if(function_exists('curl_version')) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_USERAGENT, 'shareCount/1.1 by abemedia');
+            curl_setopt($ch, CURLOPT_USERAGENT, 'shareCount/1.2 by abemedia');
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
@@ -137,17 +135,16 @@ class shareCount {
         if ($data) {
             switch($service) {
             case "facebook":
-                $data = json_decode($data);
-                $count = (is_array($data) ? $data[0]->total_count : $data->total_count);
+                $data = json_decode($data, true);
+                $count = $data[$this->url]["share"]["share_count"];
                 break;
             case "google":
-                preg_match( '/ld:\[[^,]+,\[\d+,(\d+),/', $data, $matches);
-                $count = (int) $matches[1]; 
+                preg_match( '/window\.__SSR = {c: ([\d]+)/', $data, $matches);
+                $count = $matches[1]; 
                 break;
             case "pinterest":
                 $data = substr( $data, 13, -1);
             case "linkedin":
-            case "twitter":
                 $data = json_decode($data);
                 $count = $data->count;
                 break;
@@ -155,17 +152,12 @@ class shareCount {
                 $data = json_decode($data);
                 $count = $data->result->views;
                 break;
-            case "delicious":
-                $data = json_decode($data);
-                $count = $data[0]->total_posts;
-                break;
             case "reddit":
                 $data = json_decode($data);
+                $count = 0;
                 foreach($data->data->children as $child) {
-                    $ups+= (int) $child->data->ups;
-                    $downs+= (int) $child->data->downs;
+                    $count+= $child->data->score;
                 }
-                $count = $ups - $downs;
                 break;
             case "buffer":
                 $data = json_decode($data);
