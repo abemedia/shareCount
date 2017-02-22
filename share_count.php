@@ -89,22 +89,25 @@ class shareCount {
     // query API to get share counts
     public function getShares($url = '') {
         $url = $url ?: $this->url;
-        
+
         $shareLinks = array(
-            "facebook"    => "http://graph.facebook.com/?ids=",
-            "google"      => "https://apis.google.com/u/0/se/0/_/+1/sharebutton?plusShare=true&url=",
-            "linkedin"    => "https://www.linkedin.com/countserv/count/share?format=json&url=",
-            "pinterest"   => "http://api.pinterest.com/v1/urls/count.json?url=",
-            "stumbleupon" => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=",
-            "reddit"      => "http://www.reddit.com/api/info.json?&url=",
-            "buffer"      => "https://api.bufferapp.com/1/links/shares.json?url=",
-            "vk"          => "http://vk.com/share.php?act=count&index=1&url="
+            "facebook"    => array("http://graph.facebook.com/?ids="),
+            "google"  => array("https://apis.google.com/u/0/se/0/_/+1/sharebutton?plusShare=true&url="),
+            "linkedin"    => array("https://www.linkedin.com/countserv/count/share?format=json&url="),
+            "pinterest"   => array("http://api.pinterest.com/v1/urls/count.json?url="),
+            "stumbleupon" => array("http://www.stumbleupon.com/services/1.01/badge.getinfo?url="),
+            "reddit"      => array("http://www.reddit.com/api/info.json?&url="),
+            "buffer"      => array("https://api.bufferapp.com/1/links/shares.json?url="),
+            "vk"          => array("http://vk.com/share.php?act=count&index=1&url="),
+            "addthis"     => array("http://api-public.addthis.com/url/shares.json?url="),
+            "flattr"      => array("https://api.flattr.com/rest/v2/things/lookup/?url="),
+            "xing"        => array("https://www.xing-share.com/spi/shares/statistics?url=",'POST')
         );
         
         foreach($shareLinks as $service=>$provider) {
-            @$this->getCount($service, $provider . $this->url);
+            $this->getCount($service, $provider[0] . $this->url, $provider[1]);
         }
-        
+
         switch($this->format) {
             case 'xml':
                 return $this->generateValidXmlFromObj($this->data, "data");
@@ -115,23 +118,41 @@ class shareCount {
                 return $this->data;
         }
     }
-    
+
     // query API to get share counts
-    private function getCount($service, $url){
+    private function getCount($service, $url, $method = 'GET'){
         if(function_exists('curl_version')) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_USERAGENT, 'shareCount/1.2 by abemedia');
+            if($method=='POST'){
+                $url = explode('?',$url);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS,$url[1]);
+                $url = $url[0];
+            }
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
             curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-            $data = curl_exec($ch);
+            @$data = curl_exec($ch);
             curl_close($ch);
         }
         else {
-            $data = @file_get_contents($url);
+            if($method=='POST'){
+                $url = explode('?',$url);
+                $params = array('http' => array(
+                    'method' => 'POST',
+                    'header'  => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => $url[1]
+                ));
+                $url = $url[0];
+                $data = @file_get_contents($url, false, stream_context_create($params));
+            }
+            else {
+                $data = @file_get_contents($url);
+            }
         }
-        
+
         if ($data) {
             switch($service) {
             case "facebook":
@@ -159,6 +180,7 @@ class shareCount {
                     $count+= $child->data->score;
                 }
                 break;
+            case "addthis":
             case "buffer":
                 $data = json_decode($data);
                 $count = $data->shares;
@@ -167,35 +189,40 @@ class shareCount {
                 $data = preg_match('/^VK.Share.count\(\d+,\s+(\d+)\);$/i', $data, $matches);
                 $count = $matches[1];
                 break;
+            case "flattr":
+                $data = json_decode($data);
+                $count = @$data->flattrs;// maybe not : {"message":"not_found","description":"No thing was found"}
+                break;
+            case "xing":
+                $data = json_decode($data);
+                $count = @$data->share_counter;
+                break;
             default:
                 // kill the script if trying to fetch from a provider that doesn't exist
-                die("Error: Service not found");
+                die("Error: Service (".$service.") not found");
             }
             $count = (int) $count;
             $this->data->shares->total += $count;
             $this->data->shares->$service = $count;
-        } else{
+        } else {
             $this->data->shares->$service = '';
         }
         return;
     }
-    
+
     // Get data and return it. If cache is active check for cached data and create it if unsuccessful.
     private function getData() {
         if($this->cache) $key = md5($this->url) . '.' . ($this->format == 'jsonp' ? 'json' : $this->format);
         switch($this->cache) {
             case 'memcache':
-                if(!function_exists('memcache_connect')) 
-                { 
-                    die('Memcache isn\'t installed'); 
+                if(!function_exists('memcache_connect')) {
+                    die('Memcache isn\'t installed');
                 } 
-                else
-                {
+                else {
                     $memcache = new Memcache;
                     $memcache->addServer($this->config->cache_server, $this->config->cache_port, $this->config->cache_persistent);
-                    if(!$memcache->connect($this->config->cache_server, $this->config->cache_port)) 
-                    { 
-                        die('Couldn\'t connect to Memcache host'); 
+                    if(!$memcache->connect($this->config->cache_server, $this->config->cache_port)) {
+                        die('Couldn\'t connect to Memcache host');
                     } 
                     $data = $memcache->get($key);
                     if ($data === false) {
@@ -205,6 +232,9 @@ class shareCount {
                 }
                 break;
             case 'apc':
+                if(!function_exists('apc_exists')) {
+                    die('APC isn\'t installed'); 
+                } 
                 if (apc_exists($key)) {
                     $data = apc_fetch($key);
                 }
@@ -213,7 +243,7 @@ class shareCount {
                     apc_store($key, $data, $this->cache_time);
                 }
                 break;
-            case 'file': 
+            case 'file':
                 $data = $this->getCacheFile($key);
                 break;
             default:
@@ -221,10 +251,10 @@ class shareCount {
         }
         // if the format is JSONP wrap in callback function
         if($this->format == 'jsonp') $data = $this->callback . '(' . $data . ')';
-        
+
         return $data;
     }
-    
+
     // get cache file - create if doesn't exist
     private function getCacheFile($key) {
         if (!file_exists($this->cache_directory)) {
@@ -273,7 +303,7 @@ class shareCount {
             @closedir($handle);
         }
     }
-    
+
     // output share counts as XML
     // functions adopted from http://www.sean-barton.co.uk/2009/03/turning-an-array-or-object-into-xml-using-php/
     public static function generateValidXmlFromObj(stdClass $obj, $node_block='nodes', $node_name='node') {
