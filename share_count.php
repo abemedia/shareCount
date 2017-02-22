@@ -9,7 +9,7 @@ class shareCount {
     private $cache;
     private $cache_directory;
     private $cache_time;
-    
+
     function __construct() {
         $this->config = new Config;
         $this->cache = $this->config->cache;
@@ -17,28 +17,28 @@ class shareCount {
         $this->cache_time = $this->config->cache_time;
         $this->data = new stdClass;
     }
-    
+
     private function getVar($var, $strict = false) {
         if(array_key_exists($var, $_REQUEST) && $_REQUEST[$var] !== "") return $_REQUEST[$var];
         elseif($strict) return false;
         else return $this->config->$var;
     }
-    
+
     public function get($url) {
         $this->url = $url;
         $this->data->url           = $this->url;
         $this->data->shares        = new stdClass;
         $this->data->shares->total = 0;
-        
+
         return $this->getShares($url)->shares;
     }
-    
+
     public function serve() {
         $this->url = $this->url ?: filter_input(INPUT_GET, 'url', FILTER_SANITIZE_URL);
-        
+
         // kill the script if no URL provided
         if(!$this->url) die("Error: No URL specified.");
-        
+
         $this->setFormat($this->format ?: $this->getVar('format'));
         $this->callback            = $this->callback ?: $this->getCallback();
         $this->data                = new stdClass;
@@ -49,7 +49,7 @@ class shareCount {
         $data = $this->getData();
         return $data;
     }
-    
+
     // validate and return the callback
     private function getCallback(){
         return filter_var($this->getVar('callback'), FILTER_VALIDATE_REGEXP,
@@ -58,25 +58,25 @@ class shareCount {
                     "regexp"=>"/^\w+$/"
                     )
                 )
-            );        
+            );
     }
-    
+
     // set format of the output
     private function setFormat ($format) {
         switch($format) {
             case "xml":
                 $this->format = 'xml';
-                header ("Content-Type:text/xml"); 
+                header ("Content-Type:text/xml");
                 break;
-            case "jsonp": 
+            case "jsonp":
                 $this->format = 'jsonp';
-                header ("Content-Type: application/javascript"); 
+                header ("Content-Type: application/javascript");
                 break;
             case "json": // only here for reference
             default:
                 if($this->getCallback()) {
                     $this->format = 'jsonp';
-                    header ("Content-Type: application/javascript"); 
+                    header ("Content-Type: application/javascript");
                 }
                 else {
                     $this->format = 'json';
@@ -85,7 +85,7 @@ class shareCount {
         }
         return $format;
     }
-    
+
     // query API to get share counts
     public function getShares($url = '') {
         $url = $url ?: $this->url;
@@ -103,7 +103,7 @@ class shareCount {
             "flattr"      => array("https://api.flattr.com/rest/v2/things/lookup/?url="),
             "xing"        => array("https://www.xing-share.com/spi/shares/statistics?url=",'POST')
         );
-        
+
         foreach($shareLinks as $service=>$provider) {
             $this->getCount($service, $provider[0] . $this->url, $provider[1]);
         }
@@ -258,7 +258,7 @@ class shareCount {
     // get cache file - create if doesn't exist
     private function getCacheFile($key) {
         if (!file_exists($this->cache_directory)) {
-            mkdir($this->cache_directory, 0777, true);
+            mkdir($this->cache_directory, 0755, true);
         }
         $file = $this->cache_directory . $key;
         $file_created = ((@file_exists($file))) ? @filemtime($file) : 0;
