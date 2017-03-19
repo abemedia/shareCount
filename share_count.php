@@ -105,7 +105,7 @@ class shareCount {
         );
 
         foreach($shareLinks as $service=>$provider) {
-            $this->getCount($service, $provider[0] . $this->url, $provider[1]);
+            @$this->getCount($service, $provider[0] . $this->url, $provider[1]);
         }
 
         switch($this->format) {
