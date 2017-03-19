@@ -91,16 +91,16 @@ class shareCount {
         $url = $url ?: $this->url;
 
         $shareLinks = array(
-            "facebook"    => array("http://graph.facebook.com/?ids="),
-            "google"  => array("https://apis.google.com/u/0/se/0/_/+1/sharebutton?plusShare=true&url="),
-            "linkedin"    => array("https://www.linkedin.com/countserv/count/share?format=json&url="),
-            "pinterest"   => array("http://api.pinterest.com/v1/urls/count.json?url="),
-            "stumbleupon" => array("http://www.stumbleupon.com/services/1.01/badge.getinfo?url="),
-            "reddit"      => array("http://www.reddit.com/api/info.json?&url="),
-            "buffer"      => array("https://api.bufferapp.com/1/links/shares.json?url="),
-            "vk"          => array("http://vk.com/share.php?act=count&index=1&url="),
-            "addthis"     => array("http://api-public.addthis.com/url/shares.json?url="),
-            "flattr"      => array("https://api.flattr.com/rest/v2/things/lookup/?url="),
+            "facebook"    => array("http://graph.facebook.com/?ids=",'GET'),
+            "google"      => array("https://apis.google.com/u/0/se/0/_/+1/sharebutton?plusShare=true&url=",'GET'),
+            "linkedin"    => array("https://www.linkedin.com/countserv/count/share?format=json&url=",'GET'),
+            "pinterest"   => array("http://api.pinterest.com/v1/urls/count.json?url=",'GET'),
+            "stumbleupon" => array("http://www.stumbleupon.com/services/1.01/badge.getinfo?url=",'GET'),
+            "reddit"      => array("http://www.reddit.com/api/info.json?&url=",'GET'),
+            "buffer"      => array("https://api.bufferapp.com/1/links/shares.json?url=",'GET'),
+            "vk"          => array("http://vk.com/share.php?act=count&index=1&url=",'GET'),
+            "addthis"     => array("http://api-public.addthis.com/url/shares.json?url=",'GET'),
+            "flattr"      => array("https://api.flattr.com/rest/v2/things/lookup/?url=",'GET'),
             "xing"        => array("https://www.xing-share.com/spi/shares/statistics?url=",'POST')
         );
 
@@ -132,6 +132,7 @@ class shareCount {
             }
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
             curl_setopt($ch, CURLOPT_TIMEOUT, 1);
             @$data = curl_exec($ch);
@@ -161,7 +162,7 @@ class shareCount {
                 break;
             case "google":
                 preg_match( '/window\.__SSR = {c: ([\d]+)/', $data, $matches);
-                $count = $matches[1]; 
+                $count = isset($matches[1])?$matches[1]:0; 
                 break;
             case "pinterest":
                 $data = substr( $data, 13, -1);
@@ -171,7 +172,7 @@ class shareCount {
                 break;
             case "stumbleupon":
                 $data = json_decode($data);
-                $count = $data->result->views;
+                $count = $data->result->in_index?$data->result->views:0;
                 break;
             case "reddit":
                 $data = json_decode($data);
