@@ -11,7 +11,8 @@ The API URL is `https://count.donreach.com/` and allows the following parameters
 | ----------------------- | ---------------- | ----------------------------------------------------------------- |
 | **url**  (required)     | `none`           | The URL of the page you want to fetch the social shares for.      |
 | **format** (optional)   | `json`           | The format of the output. Can be either `json`, `jsonp` or `xml`. |
-| **callback** (optional) | `processShares`  | The JavaScript callback to execute. 
+| **callback** (optional) | `processShares`  | The JavaScript callback to execute.                               |
+| **services** (optional) | `none` (all)     | A comma separated list of services to fetch share count for.      |
 
 ### Social Shares as JSON Data
 
@@ -80,6 +81,20 @@ To get the data in XML just set the format variable: `https://count.donreach.com
 </data>
 ```
 
+### Social shares for specific networks
+
+To speed up loading times, you can specify the services that you would like to fetch share counts for.  `https://count.donreach.com/?url=http://9gag.com&services=facebook,google` outputs:
+```javascript
+{
+	url: "http://9gag.com",
+	shares: {
+		total: 296060,
+		facebook: 206570,
+		google: 89490,
+	}
+}
+```
+
 ## jQuery & Bootstrap Example
 
 In the following example we're going to display a few pretty Bootstrap buttons with FontAwesome icons and the social share count in bubbles.
@@ -89,14 +104,14 @@ In the following example we're going to display a few pretty Bootstrap buttons w
 $(document).ready(function () {
     // Get current URL from canonical tag
     var shareUrl = $("link[rel=canonical]").attr("href");
-    
+
     // Ajax request to read share counts. Notice "&callback=?" is appended to the URL to define it as JSONP.
     $.getJSON('https://count.donreach.com/?url=' + encodeURIComponent(shareUrl) + "&callback=?", function (data) {
         shares = data.shares;
         $(".count").each(function (index, el) {
             service = $(el).parents(".share-btn").attr("data-service");
             count = shares[service];
-            
+
             // Divide large numbers eg. 5500 becomes 5.5k
             if(count>1000) {
                 count = (count / 1000).toFixed(1);
@@ -164,4 +179,3 @@ Download the package and unzip in on your computer. Open config.php with a text-
 &copy; 2013-2014 Adam Bouqdib - http://abemedia.co.uk
 
 Released under GNU GPL 2. See licence.md for further information.
-

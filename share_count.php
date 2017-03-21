@@ -24,8 +24,9 @@ class shareCount {
         else return $this->config->$var;
     }
 
-    public function get($url) {
+    public function get($url, $services = '') {
         $this->url = $url;
+        $this->services = $services;
         $this->data->url           = $this->url;
         $this->data->shares        = new stdClass;
         $this->data->shares->total = 0;
@@ -35,6 +36,7 @@ class shareCount {
 
     public function serve() {
         $this->url = $this->url ?: filter_input(INPUT_GET, 'url', FILTER_SANITIZE_URL);
+        $this->services = $this->services ?: filter_input(INPUT_GET, 'services', FILTER_SANITIZE_URL);
 
         // kill the script if no URL provided
         if(!$this->url) die("Error: No URL specified.");
@@ -45,7 +47,7 @@ class shareCount {
         $this->data->url           = $this->url;
         $this->data->shares        = new stdClass;
         $this->data->shares->total = 0;
-        
+
         $data = $this->getData();
         return $data;
     }
@@ -87,8 +89,9 @@ class shareCount {
     }
 
     // query API to get share counts
-    public function getShares($url = '') {
+    public function getShares($url = '', $services = '') {
         $url = $url ?: $this->url;
+        $services = $services ?: $this->services;
 
         $shareLinks = array(
             "facebook"    => array("http://graph.facebook.com/?ids=",'GET'),
@@ -104,8 +107,19 @@ class shareCount {
             "xing"        => array("https://www.xing-share.com/spi/shares/statistics?url=",'POST')
         );
 
-        foreach($shareLinks as $service=>$provider) {
-            @$this->getCount($service, $provider[0] . $this->url, $provider[1]);
+        if ($services) {
+          if (!is_array($services)) {
+            $services = explode(',', $services);
+          }
+
+          foreach($services as $service) {
+              $provider = $shareLinks[$service];
+              @$this->getCount($service, $provider[0] . $this->url, $provider[1]);
+          }
+        } else {
+          foreach($shareLinks as $service=>$provider) {
+              @$this->getCount($service, $provider[0] . $this->url, $provider[1]);
+          }
         }
 
         switch($this->format) {
@@ -162,7 +176,7 @@ class shareCount {
                 break;
             case "google":
                 preg_match( '/window\.__SSR = {c: ([\d]+)/', $data, $matches);
-                $count = isset($matches[1])?$matches[1]:0; 
+                $count = isset($matches[1])?$matches[1]:0;
                 break;
             case "pinterest":
                 $data = substr( $data, 13, -1);
@@ -218,13 +232,13 @@ class shareCount {
             case 'memcache':
                 if(!function_exists('memcache_connect')) {
                     die('Memcache isn\'t installed');
-                } 
+                }
                 else {
                     $memcache = new Memcache;
                     $memcache->addServer($this->config->cache_server, $this->config->cache_port, $this->config->cache_persistent);
                     if(!$memcache->connect($this->config->cache_server, $this->config->cache_port)) {
                         die('Couldn\'t connect to Memcache host');
-                    } 
+                    }
                     $data = $memcache->get($key);
                     if ($data === false) {
                         $data = $this->getShares();
@@ -234,8 +248,8 @@ class shareCount {
                 break;
             case 'apc':
                 if(!function_exists('apc_exists')) {
-                    die('APC isn\'t installed'); 
-                } 
+                    die('APC isn\'t installed');
+                }
                 if (apc_exists($key)) {
                     $data = apc_fetch($key);
                 }
@@ -268,12 +282,12 @@ class shareCount {
             return file_get_contents($file);
         }
         $data = $this->getShares();
-        $fp = @fopen($file, 'w'); 
+        $fp = @fopen($file, 'w');
         @fwrite($fp, $data);
         @fclose($fp);
         return $data;
     }
-    
+
     // Delete expired file cache. Use "kill" parameter to also flush the memory and delete all cache files.
     public function cleanCache($kill = null) {
         // flush memcache
