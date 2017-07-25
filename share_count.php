@@ -108,18 +108,21 @@ class shareCount {
         );
 
         if ($services) {
-          if (!is_array($services)) {
-            $services = explode(',', $services);
-          }
-
-          foreach($services as $service) {
-              $provider = $shareLinks[$service];
-              @$this->getCount($service, $provider[0] . $this->url, $provider[1]);
-          }
+            if (!is_array($services)) { $services = explode(',', $services); }
         } else {
-          foreach($shareLinks as $service=>$provider) {
-              @$this->getCount($service, $provider[0] . $this->url, $provider[1]);
-          }
+            $services = array_keys($shareLinks);
+        }
+
+        foreach($services as $service) {
+            $provider = $shareLinks[$service];
+            $url_params = '';
+
+            if (array_key_exists($service, $this->config->url_params)) {
+                $url_params = '&' . http_build_query($this->config->url_params[$service]);
+            }
+
+            $url = $provider[0] . $this->url . $url_params;
+            @$this->getCount($service, $url, $provider[1]);
         }
 
         switch($this->format) {

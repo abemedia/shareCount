@@ -17,4 +17,11 @@ class Config {
     public $format = 'json';              // 'json', 'jsonp' or 'xml'
     public $callback = 'processShares';   // default jsonp callback function name
 
+    /* added URL parameters for services */
+    public $url_params = array(
+        'facebook'  => array(
+            'app_access_token'  => ''
+        )
+    );
+
 }
